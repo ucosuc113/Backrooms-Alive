@@ -40,8 +40,8 @@ public class BackroomsChunkGenerator extends ChunkGenerator {
             .xmap(BackroomsChunkGenerator::new, generator -> generator.biome)
             .codec();
 
-    private static final int FLOOR_Y = 48;
-    private static final int CEILING_Y = 53;
+    private static final int FLOOR_Y = 47;
+    private static final int CEILING_Y = 52;
     private static final int ROOM_MIN = 2;
     private static final int ROOM_MAX = 13;
     private static final int DOOR_MIN = 6;
@@ -65,7 +65,7 @@ public class BackroomsChunkGenerator extends ChunkGenerator {
         RandomSource random = RandomSource.create(seedFor(region.getSeed(), chunkPos.x, chunkPos.z));
         List<MemoryRegion> memories = new ArrayList<>(MemoryLibrary.get(region.getServer()).all());
 
-        carveImpossibleHouse(chunk, random, memories.isEmpty());
+        carveImpossibleHouse(chunk);
         applyRememberedFunctions(region, chunk, random, memories);
         Heightmap.primeHeightmaps(chunk, java.util.EnumSet.of(
                 Heightmap.Types.WORLD_SURFACE_WG,
@@ -123,13 +123,12 @@ public class BackroomsChunkGenerator extends ChunkGenerator {
         info.add("Backrooms: function-memory generator");
     }
 
-    private void carveImpossibleHouse(ChunkAccess chunk, RandomSource random, boolean useFallbackLayout) {
+    private void carveImpossibleHouse(ChunkAccess chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int minX = chunkPos.getMinBlockX();
         int minZ = chunkPos.getMinBlockZ();
-        BlockState wall = FunctionalMaterialTable.stateFor(ArchitecturalFunction.WALL, random);
-        BlockState floor = FunctionalMaterialTable.stateFor(ArchitecturalFunction.FLOOR, random);
-        BlockState ceiling = FunctionalMaterialTable.stateFor(ArchitecturalFunction.CEILING, random);
+        BlockState floor = Blocks.SMOOTH_SANDSTONE.defaultBlockState();
+        BlockState ceiling = Blocks.SMOOTH_SANDSTONE.defaultBlockState();
 
         for (int localX = 0; localX < 16; localX++) {
             for (int localZ = 0; localZ < 16; localZ++) {
@@ -140,18 +139,7 @@ public class BackroomsChunkGenerator extends ChunkGenerator {
                 for (int y = FLOOR_Y + 1; y < CEILING_Y; y++) {
                     set(chunk, x, y, z, Blocks.AIR.defaultBlockState());
                 }
-                if (isPerimeter(localX, localZ) && !isSharedDoorOpening(localX, localZ)) {
-                    for (int y = FLOOR_Y + 1; y < CEILING_Y; y++) {
-                        set(chunk, x, y, z, wall);
-                    }
-                }
             }
-        }
-
-        if (useFallbackLayout) {
-            addInteriorLogic(chunk, random, minX, minZ, wall);
-            addLowCeilingLights(chunk, random, minX, minZ);
-            addOccasionalStairs(chunk, random, minX, minZ);
         }
     }
 
@@ -199,73 +187,69 @@ public class BackroomsChunkGenerator extends ChunkGenerator {
 
     private void applyRememberedFunctions(WorldGenRegion region, ChunkAccess chunk, RandomSource random, List<MemoryRegion> memories) {
         if (memories.isEmpty()) {
-            addGenericMisrememberedObjects(chunk, random, chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
             return;
         }
 
         MemoryRegion memory = memories.get(Math.floorMod((int) (random.nextLong() ^ chunk.getPos().x * 31L ^ chunk.getPos().z), memories.size()));
         var blockLookup = region.registryAccess().lookup(Registries.BLOCK).orElseThrow();
-        int placed = applyRememberedLayout(chunk, random, memory, blockLookup);
-
-        long connectionHints = MemoryConnectorAnalyzer.analyze(memory, blockLookup).stream()
-                .filter(connector -> connector.type() == MemoryConnectorType.DOOR
-                        || connector.type() == MemoryConnectorType.OPENING
-                        || connector.type() == MemoryConnectorType.STAIRS
-                        || connector.type() == MemoryConnectorType.CORRIDOR_END
-                        || connector.type() == MemoryConnectorType.CONNECTION_POINT)
-                .count();
-        if (connectionHints > 0 && random.nextBoolean()) {
-            corruptFunction(chunk, random, ArchitecturalFunction.DOOR, chunk.getPos().getMinBlockX() + 7, FLOOR_Y + 1, chunk.getPos().getMinBlockZ() + 7);
-        }
-
-        if (placed == 0) {
-            addGenericMisrememberedObjects(chunk, random, chunk.getPos().getMinBlockX(), chunk.getPos().getMinBlockZ());
-        }
+        applyRememberedLayout(chunk, memory, blockLookup);
     }
 
-    private int applyRememberedLayout(ChunkAccess chunk, RandomSource random, MemoryRegion memory, net.minecraft.core.HolderGetter<net.minecraft.world.level.block.Block> blockLookup) {
+    private int applyRememberedLayout(ChunkAccess chunk, MemoryRegion memory, net.minecraft.core.HolderGetter<net.minecraft.world.level.block.Block> blockLookup) {
         int placed = 0;
+        int minMemoryY = Integer.MAX_VALUE;
+        int maxMemoryY = Integer.MIN_VALUE;
+
+        for (MemoryBlockSnapshot snapshot : memory.blocks()) {
+            int relativeY = snapshot.relativePos().getY();
+            if (relativeY < minMemoryY) {
+                minMemoryY = relativeY;
+            }
+            if (relativeY > maxMemoryY) {
+                maxMemoryY = relativeY;
+            }
+        }
+
+        int verticalSpan = Math.max(1, maxMemoryY - minMemoryY);
+        int interiorHeight = Math.max(1, CEILING_Y - FLOOR_Y - 1);
+
         for (MemoryBlockSnapshot snapshot : memory.blocks()) {
             BlockState rememberedState = NbtUtils.readBlockState(blockLookup, snapshot.blockState());
-            ArchitecturalFunction function = MemoryFunctionClassifier.classify(rememberedState);
-            if (function == ArchitecturalFunction.AIR) {
+            if (rememberedState.isAir()) {
                 continue;
             }
 
             int localX = 1 + Math.floorMod(snapshot.relativePos().getX(), 14);
             int localZ = 1 + Math.floorMod(snapshot.relativePos().getZ(), 14);
-            int localY = 1 + Math.floorMod(snapshot.relativePos().getY(), CEILING_Y - FLOOR_Y - 1);
             int worldX = chunk.getPos().getMinBlockX() + localX;
             int worldZ = chunk.getPos().getMinBlockZ() + localZ;
-            int worldY = FLOOR_Y + localY;
 
-            if (function == ArchitecturalFunction.WALL) {
-                if (random.nextInt(3) != 0) {
-                    set(chunk, worldX, worldY, worldZ, FunctionalMaterialTable.stateFor(ArchitecturalFunction.WALL, random));
-                    placed++;
-                }
-            } else if (function == ArchitecturalFunction.FLOOR || function == ArchitecturalFunction.CEILING) {
-                set(chunk, worldX, worldY, worldZ, FunctionalMaterialTable.stateFor(function, random));
-                placed++;
-            } else if (random.nextInt(4) == 0) {
-                corruptFunction(chunk, random, function, worldX, worldY, worldZ);
-                placed++;
+            int relativeY = snapshot.relativePos().getY();
+            int worldY;
+            if (relativeY == minMemoryY) {
+                worldY = FLOOR_Y;
+            } else if (relativeY == maxMemoryY) {
+                worldY = CEILING_Y;
+            } else if (verticalSpan <= 1) {
+                worldY = FLOOR_Y + 1 + (interiorHeight / 2);
             } else {
-                setRememberedFunction(chunk, random, function, worldX, worldY, worldZ, snapshot.blockEntity());
-                placed++;
+                int normalized = (relativeY - minMemoryY - 1) * (interiorHeight - 1) / Math.max(1, verticalSpan - 1);
+                worldY = FLOOR_Y + 1 + normalized;
             }
 
-            if (placed >= 120) {
+            setRememberedBlock(chunk, rememberedState, worldX, worldY, worldZ, snapshot.blockEntity());
+            placed++;
+
+            if (placed >= 180) {
                 return placed;
             }
         }
         return placed;
     }
 
-    private void setRememberedFunction(ChunkAccess chunk, RandomSource random, ArchitecturalFunction function, int x, int y, int z, CompoundTag blockEntity) {
-        BlockState state = FunctionalMaterialTable.stateFor(function, random);
-        set(chunk, x, y, z, state);
-        if (blockEntity != null && function == ArchitecturalFunction.STORAGE) {
+    private void setRememberedBlock(ChunkAccess chunk, BlockState rememberedState, int x, int y, int z, CompoundTag blockEntity) {
+        set(chunk, x, y, z, rememberedState);
+        if (blockEntity != null && MemoryFunctionClassifier.classify(rememberedState) == ArchitecturalFunction.STORAGE) {
             CompoundTag tag = blockEntity.copy();
             tag.putInt("x", x);
             tag.putInt("y", y);

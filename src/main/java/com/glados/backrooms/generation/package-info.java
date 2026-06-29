@@ -1,8 +1,8 @@
 /**
- * Paquete reservado para la generacion de mundo del mod (chunk generator,
- * biomas, estructuras de Backrooms, corrupcion, etc.).
+ * Generacion procedural de la dimension Backrooms.
  * <p>
- * Sin implementacion todavia: este modulo de infraestructura no incluye
- * ninguna logica de generacion. Se completara en su modulo correspondiente.
+ * El generador no usa ruido Perlin, biomas, cuevas ni terreno clasico. Trata
+ * cada chunk como una celda arquitectonica conectada y consume la biblioteca de
+ * recuerdos para reconstruir funciones degradadas, no copias literales.
  */
 package com.glados.backrooms.generation;

@@ -15,5 +15,8 @@
   "message.backrooms.memory.list_header": "Memory library (%s):",
   "message.backrooms.memory.selection_cleared": "Memory selection cleared.",
   "message.backrooms.memory.too_large": "Memory selection is too large: %s x %s x %s. Maximum is 64 x 64 x 64.",
-  "message.backrooms.memory.selection_required": "Select two corners with the Memory Selector first."
+  "message.backrooms.memory.selection_required": "Select two corners with the Memory Selector first.",
+  "message.backrooms.portal.created": "Backrooms portal opened.",
+  "message.backrooms.portal.dimension_missing": "Backrooms dimension is not loaded.",
+  "message.backrooms.portal.invalid_frame": "Invalid Backrooms frame. Use a Mind Storage rectangle with an empty inside from 1 x 2 to 16 x 16."
 }

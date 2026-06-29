@@ -15,5 +15,8 @@
   "message.backrooms.memory.list_header": "Biblioteca de recuerdos (%s):",
   "message.backrooms.memory.selection_cleared": "Selecci\u00f3n de recuerdo borrada.",
   "message.backrooms.memory.too_large": "La selecci\u00f3n es demasiado grande: %s x %s x %s. El m\u00e1ximo es 64 x 64 x 64.",
-  "message.backrooms.memory.selection_required": "Selecciona dos esquinas con el Selector de Recuerdos primero."
+  "message.backrooms.memory.selection_required": "Selecciona dos esquinas con el Selector de Recuerdos primero.",
+  "message.backrooms.portal.created": "Portal a las Backrooms abierto.",
+  "message.backrooms.portal.dimension_missing": "La dimension Backrooms no esta cargada.",
+  "message.backrooms.portal.invalid_frame": "Marco invalido. Usa un rectangulo de Almacen de Mentes con interior vacio de 1 x 2 a 16 x 16."
 }

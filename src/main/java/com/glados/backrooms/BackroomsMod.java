@@ -3,6 +3,7 @@ package com.glados.backrooms;
 import com.glados.backrooms.config.BackroomsConfig;
 import com.glados.backrooms.registry.ModBlockEntities;
 import com.glados.backrooms.registry.ModBlocks;
+import com.glados.backrooms.registry.ModChunkGenerators;
 import com.glados.backrooms.registry.ModCreativeTabs;
 import com.glados.backrooms.registry.ModItems;
 import com.glados.backrooms.registry.ModMenus;
@@ -41,6 +42,7 @@ public class BackroomsMod {
         ModSounds.SOUND_EVENTS.register(modEventBus);
         ModParticles.PARTICLE_TYPES.register(modEventBus);
         ModMenus.MENU_TYPES.register(modEventBus);
+        ModChunkGenerators.CHUNK_GENERATORS.register(modEventBus);
 
         // --- Configuracion ---
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BackroomsConfig.COMMON_SPEC);

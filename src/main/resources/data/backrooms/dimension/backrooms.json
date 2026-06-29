@@ -1,15 +1,7 @@
 {
   "type": "backrooms:backrooms",
   "generator": {
-    "type": "minecraft:flat",
-    "settings": {
-      "biome": "minecraft:the_void",
-      "lakes": false,
-      "features": false,
-      "layers": [
-        { "block": "minecraft:air", "height": 1 }
-      ],
-      "structure_overrides": []
-    }
+    "type": "backrooms:backrooms",
+    "biome": "minecraft:the_void"
   }
 }

@@ -1,8 +1,7 @@
 /**
- * Paquete reservado para el sistema de portales del mod.
+ * Logica de portales del mod.
  * <p>
- * Todos los portales se construiran sobre Immersive Portals; no habra
- * teletransportes clasicos. Sin implementacion todavia: se completara en
- * el modulo de portal correspondiente.
+ * El acceso a Backrooms usa Immersive Portals: marco de Almacen de Mentes y
+ * activacion con Comparador Episodico, sin teletransporte clasico.
  */
 package com.glados.backrooms.portal;

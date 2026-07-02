@@ -1,0 +1,22 @@
+{
+  "itemGroup.backrooms.backrooms_tab": "Backrooms",
+  "creativetab.backrooms.backrooms_tab": "Backrooms",
+  "block.backrooms.mind_storage": "Mind Storage",
+  "item.backrooms.episodic_comparator": "Episodic Comparator",
+  "item.backrooms.memory_selector": "Memory Selector",
+  "message.backrooms.memory_selector.first": "Memory corner A: %s",
+  "message.backrooms.memory_selector.second": "Memory corner B: %s",
+  "message.backrooms.memory_selector.bounds": "Memory selection: %s x %s x %s",
+  "message.backrooms.memory.name_required": "Memory name is required.",
+  "message.backrooms.memory.saved": "Saved memory '%s' [%s] with %s block snapshots.",
+  "message.backrooms.memory.updated": "Updated memory '%s' [%s] with %s block snapshots.",
+  "message.backrooms.memory.not_found": "No memory found for '%s'.",
+  "message.backrooms.memory.empty": "The memory library is empty.",
+  "message.backrooms.memory.list_header": "Memory library (%s):",
+  "message.backrooms.memory.selection_cleared": "Memory selection cleared.",
+  "message.backrooms.memory.too_large": "Memory selection is too large: %s x %s x %s. Maximum is 64 x 64 x 64.",
+  "message.backrooms.memory.selection_required": "Select two corners with the Memory Selector first.",
+  "message.backrooms.portal.created": "Backrooms portal opened.",
+  "message.backrooms.portal.dimension_missing": "Backrooms dimension is not loaded.",
+  "message.backrooms.portal.invalid_frame": "Invalid Backrooms frame. Use a Mind Storage rectangle with an empty inside from 1 x 2 to 16 x 16."
+}

@@ -1,0 +1,22 @@
+{
+  "itemGroup.backrooms.backrooms_tab": "Backrooms",
+  "creativetab.backrooms.backrooms_tab": "Backrooms",
+  "block.backrooms.mind_storage": "Almac\u00e9n de Mentes",
+  "item.backrooms.episodic_comparator": "Comparador Epis\u00f3dico",
+  "item.backrooms.memory_selector": "Selector de Recuerdos",
+  "message.backrooms.memory_selector.first": "Esquina A del recuerdo: %s",
+  "message.backrooms.memory_selector.second": "Esquina B del recuerdo: %s",
+  "message.backrooms.memory_selector.bounds": "Selecci\u00f3n de recuerdo: %s x %s x %s",
+  "message.backrooms.memory.name_required": "El recuerdo necesita un nombre.",
+  "message.backrooms.memory.saved": "Recuerdo '%s' guardado [%s] con %s snapshots de bloque.",
+  "message.backrooms.memory.updated": "Recuerdo '%s' actualizado [%s] con %s snapshots de bloque.",
+  "message.backrooms.memory.not_found": "No existe ning\u00fan recuerdo para '%s'.",
+  "message.backrooms.memory.empty": "La biblioteca de recuerdos est\u00e1 vac\u00eda.",
+  "message.backrooms.memory.list_header": "Biblioteca de recuerdos (%s):",
+  "message.backrooms.memory.selection_cleared": "Selecci\u00f3n de recuerdo borrada.",
+  "message.backrooms.memory.too_large": "La selecci\u00f3n es demasiado grande: %s x %s x %s. El m\u00e1ximo es 64 x 64 x 64.",
+  "message.backrooms.memory.selection_required": "Selecciona dos esquinas con el Selector de Recuerdos primero.",
+  "message.backrooms.portal.created": "Portal a las Backrooms abierto.",
+  "message.backrooms.portal.dimension_missing": "La dimension Backrooms no esta cargada.",
+  "message.backrooms.portal.invalid_frame": "Marco invalido. Usa un rectangulo de Almacen de Mentes con interior vacio de 1 x 2 a 16 x 16."
+}

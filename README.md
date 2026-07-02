@@ -1,115 +1,113 @@
-# Backrooms Mod — Minecraft Forge 1.20.1
+# Backrooms Mod - Minecraft Forge 1.20.1
 
-## Estado actual: **Módulo 1 — Infraestructura del proyecto**
+## Estado actual
 
-Este commit contiene **únicamente** la base del proyecto. No hay generación de
-mundo, Backrooms, corrupción, reconocimiento de estructuras, selección de
-regiones ni lógica de portal implementada todavía. Eso queda explícitamente
-pendiente para sus módulos correspondientes.
+El proyecto ya tiene la base técnica montada para el mod `backrooms`:
 
----
+- punto de entrada del mod en `src/main/java/com/glados/backrooms/BackroomsMod.java`
+- registros iniciales de bloques, items, tabs, block entities, sonidos, partículas, menús y chunk generators
+- configuración COMMON lista para crecer
+- paquetes de dominio ya separados para generación, memoria, portal, mundo, red, datos y eventos
 
-## 1. Qué incluye este módulo
+Todavía no hay una experiencia completa implementada para Backrooms, pero la arquitectura ya está preparada para crecer por módulos. El objetivo del proyecto en este punto no es “terminar el contenido” de inmediato, sino establecer una base sólida de infraestructura, contenido mínimo registrable y una dirección clara para la lógica procedural y narrativa del mod.
 
-- `build.gradle` / `settings.gradle` / `gradle.properties` — proyecto
-  ForgeGradle 6 para Forge **1.20.1**, mappings oficiales.
-- Dependencias obligatorias declaradas:
-  - **Immersive Portals (for Forge)** vía CurseMaven (`3.0.7-all`, proyecto
-    CurseForge `355440`, archivo `6368524`).
-  - **Cloth Config API** vía Maven de Modrinth (`11.1.136+forge`) — dependencia
-    obligatoria de Immersive Portals en 1.19+.
-- Paquetes vacíos pero documentados (`package-info.java`) para: `portal`,
-  `memory`, `generation`, `world`, `network`, `data`, `event`.
-- Registros (`registry/`) ya conectados al bus de eventos:
-  - **Bloques**: `Almacén de Mentes` (`mind_storage`), sin comportamiento.
-  - **Items**: `Comparador Episódico` (`episodic_comparator`) y el
-    `BlockItem` del Almacén de Mentes, sin comportamiento.
-  - **Creative Tab**: una sola pestaña `Backrooms` con ambos objetos.
-  - **Sounds / Particles / Block Entities / Menus**: `DeferredRegister`
-    creados y registrados, **sin entradas** — listos para ampliarse.
-- **Dimensión** (`dimension/ModDimensions.java`): solo las claves
-  (`ResourceKey`) de la dimensión, para que módulos futuros (portal,
-  teletransporte) puedan referenciarla. La definición de datos
-  (`data/backrooms/dimension_type` y `data/backrooms/dimension`) usa un
-  generador **`minecraft:flat` vacío (una capa de aire)** como placeholder
-  obligatorio — el formato de Minecraft exige un generador válido aunque no
-  se implemente generación todavía. Se reemplazará por completo en el
-  módulo de generación.
-- `config/BackroomsConfig.java`: `ForgeConfigSpec` registrado pero sin
-  ninguna opción todavía.
-- `client/ClientSetup.java` y `common/CommonSetup.java`: listeners de ciclo
-  de vida vacíos, listos para ampliarse.
-- Texturas placeholder generadas a mano (16×16, no son arte final) para que
-  el bloque y el item no se vean con la textura "missing".
-- Traducciones `en_us` y `es_es`.
+## Contexto general del proyecto
 
-## 2. Supuestos y decisiones tomadas (a confirmar)
+Este mod está pensado como una propuesta de experiencia de Backrooms en Minecraft Forge 1.20.1. La idea central es combinar:
 
-No se especificó nombre de mod ni paquete base, así que se asumió:
+- un espacio generado proceduralmente con tono arquitectónico y dislocado
+- un sistema de memoria o selección de regiones que pueda evolucionar hacia mecánicas más complejas
+- una integración con portales y estructuras de acceso que hagan sentir que el espacio no es estándar
 
-| Decisión | Valor elegido | Cómo cambiarlo |
-|---|---|---|
-| `modId` | `backrooms` | `gradle.properties` → `mod_id` |
-| Paquete base | `com.glados.backrooms` | `gradle.properties` → `mod_group_id` + mover paquetes |
-| Nombre del mod | `Backrooms` | `gradle.properties` → `mod_name` |
-| Forge | `1.20.1-47.3.0` | `gradle.properties` → `forge_version` |
+En otras palabras, el código actual apunta a una infraestructura de mod flexible: lo suficiente para registrar contenido, preparar dimensiones y dejar abierta la puerta a futuras mecánicas de exploración, generación y narrativa.
 
-⚠️ **Importante sobre Immersive Portals**: en `mods.toml` se declaró la
-dependencia con `modId="immersive_portals"`, que es el id interno conocido
-del mod, pero no pude verificarlo extrayendo el jar real (sin acceso de red
-a CurseForge/Modrinth desde este entorno). Antes de compilar en tu máquina,
-confirma este id abriendo el `mods.toml` dentro del jar descargado, o
-revisando el listado de mods en el juego.
+## Arquitectura breve
 
-## 3. ⚠️ Limitación de este entorno (léelo antes de reportar un "error")
+La raíz del código vive en `com.glados.backrooms` y está organizada por responsabilidad, no por funcionalidad de gameplay única. La idea es separar:
 
-No tengo acceso de red a `files.minecraftforge.net`, `maven.minecraftforge.net`,
-`libraries.minecraft.net`, `www.cursemaven.com` ni `api.modrinth.com` desde este
-sandbox. Esto significa que **no he podido ejecutar `./gradlew build`** ni
-descargar el toolchain de Forge para verificar la compilación de forma real.
+- bootstrap y registro: `BackroomsMod`, `client`, `common`, `registry`
+- configuración y metadatos: `config`, `dimension`, `util`
+- lógica de dominio: `generation`, `memory`, `portal`, `world`
+- extensibilidad futura: `data`, `event`, `network`
 
-Lo que sí se validó en este entorno:
-- Sintaxis de **todos** los JSON/`.mcmeta` (parseo válido).
-- Balance de llaves y estructura de **los 20 archivos `.java`**.
-- Coherencia de nombres entre clases (block/item/tab/dimension keys) y los
-  archivos de recursos que los referencian (blockstate, modelos, lang).
-- Convenciones de Forge 1.20.1 (registries vía `Registries.*` /
-  `ForgeRegistries.*`, formato de `mods.toml`, formato de dimensión/dimension
-  type) verificadas contra la documentación oficial de Forge.
+Esta estructura favorece que Claude o cualquier colaborador entienda primero la infraestructura y luego los módulos de gameplay.
 
-Lo que **debes verificar tú** la primera vez, en tu máquina con red completa:
-1. Generar el wrapper de Gradle: `gradle wrapper --gradle-version 8.1.1`
-   (no pude incluir el binario `gradle-wrapper.jar`, solo el `.properties`).
-2. `./gradlew build` (o `gradlew.bat build` en Windows) con JDK 17.
-3. Si Immersive Portals o Cloth Config fallan al resolverse, revisa que los
-   IDs de CurseMaven/Modrinth en `gradle.properties` sigan vigentes (los
-   proyectos de CurseForge a veces retiran archivos antiguos).
+## Jerarquía del código en com.glados.backrooms
 
-## 4. Estructura de paquetes
-
-```
+```text
 com.glados.backrooms
-├── BackroomsMod.java        (punto de entrada, conecta los registros)
-├── registry/                 (Blocks, Items, CreativeTabs, BlockEntities, Sounds, Particles, Menus)
-├── dimension/                 (claves de la dimensión, sin generación)
-├── config/                    (ForgeConfigSpec, sin opciones aún)
-├── client/                    (setup de cliente, vacío)
-├── common/                    (setup común, vacío)
-├── util/                      (constantes)
-├── portal/        [reservado] (futuro: integración Immersive Portals)
-├── memory/        [reservado] (futuro: Comparador Episódico / Almacén de Mentes)
-├── generation/     [reservado] (futuro: chunk generator de Backrooms)
-├── world/          [reservado] (futuro: estructuras / regiones)
-├── network/        [reservado] (futuro: paquetes cliente-servidor)
-├── data/           [reservado] (futuro: codecs propios)
-└── event/          [reservado] (futuro: subscriptores de eventos)
+├── BackroomsMod.java                      # punto de entrada del mod y conexión de DeferredRegister
+├── client/
+│   └── ClientSetup.java                  # inicialización exclusiva del cliente
+├── common/
+│   └── CommonSetup.java                  # inicialización compartida cliente/servidor
+├── config/
+│   └── BackroomsConfig.java              # configuración COMMON de Forge
+├── data/
+│   └── package-info.java                 # documento de propósito del paquete de datos
+├── dimension/
+│   └── ModDimensions.java                # claves y referencias de dimensión
+├── event/
+│   └── package-info.java                 # punto de entrada para eventos del mod
+├── generation/
+│   ├── ArchitecturalFunction.java        # funciones arquitectónicas del chunk generator
+│   ├── BackroomsChunkGenerator.java      # generador procedural del mundo
+│   ├── FunctionalMaterialTable.java      # tabla de materiales/funciones del espacio
+│   ├── MemoryFunctionClassifier.java     # clasificación de funciones por memoria
+│   └── package-info.java                 # propósito del paquete de generación
+├── memory/
+│   ├── MemoryBlockSnapshot.java          # snapshot de bloques para memoria
+│   ├── MemoryCommands.java               # comandos relacionados con memoria
+│   ├── MemoryConnector.java              # conexión entre regiones o nodos
+│   ├── MemoryConnectorAnalyzer.java      # análisis de conectores
+│   ├── MemoryConnectorType.java          # tipos de conector de memoria
+│   ├── MemoryLibrary.java                # biblioteca central de memorias/regiones
+│   ├── MemoryRegion.java                 # modelo de región de memoria
+│   ├── MemorySelection.java              # selección específica de memoria
+│   ├── MemorySelections.java             # colección de selecciones
+│   ├── MemorySelectorItem.java           # item funcional para marcar/seleccionar memoria
+│   └── package-info.java                 # propósito del paquete de memoria
+├── network/
+│   └── package-info.java                 # paquete reservado para red cliente/servidor
+├── portal/
+│   ├── BackroomsPortalEvents.java        # eventos y lógica asociada a portales
+│   └── package-info.java                 # propósito del paquete de portal
+├── registry/
+│   ├── ModBlockEntities.java            # registros de block entities
+│   ├── ModBlocks.java                   # registro de bloques
+│   ├── ModChunkGenerators.java          # registro del chunk generator
+│   ├── ModCreativeTabs.java             # pestaña creativa del mod
+│   ├── ModItems.java                    # registro de items
+│   ├── ModMenus.java                    # registro de menús UI
+│   ├── ModParticles.java                # registro de partículas
+│   └── ModSounds.java                    # registro de sonidos
+├── util/
+│   └── ModConstants.java                 # constantes compartidas del mod
+└── world/
+    └── package-info.java                 # paquete reservado para lógica futura del mundo
 ```
 
-## 5. Próximos módulos (pendientes, no implementados aquí)
+## Qué representa cada capa
 
-- Módulo de portal (integración real con Immersive Portals).
-- Módulo de generación (chunk generator de Backrooms).
-- Módulo de memoria/corrupción (comportamiento del Almacén de Mentes y el
-  Comparador Episódico).
-- Módulo de reconocimiento de estructuras / selección de regiones.
-- Recetas, sonidos, partículas y block entities concretas.
+- `BackroomsMod`, `client` y `common`: arranque del mod y sus callbacks de Forge.
+- `registry`: punto único para registrar contenido vanilla/Forge del mod.
+- `config`, `dimension`, `util`: infraestructura y referencias compartidas.
+- `generation`: lógica procedural para construir el espacio Backrooms.
+- `memory`: sistema de selección, análisis y biblioteca de regiones/recuerdos.
+- `portal`: integración del acceso al espacio y eventos asociados.
+- `data`, `event`, `network`, `world`: módulos de extensión y placeholders para futuras capas.
+
+## Scripts y recursos auxiliares
+
+En la carpeta `scripts` hay utilidades de apoyo que no forman parte del runtime del mod, pero ayudan a preparar contenido y recursos:
+
+- `scripts/gen_placeholder_textures.py`: genera texturas placeholder simples para bloques e items mientras no existe arte final. Sirve para evitar texturas faltantes y mantener el mod visualmente funcional durante el desarrollo.
+
+## Notas para Claude
+
+- El mod usa `modId = backrooms`.
+- El paquete base es `com.glados.backrooms`.
+- El proyecto apunta a Forge `1.20.1`.
+- Si vas a trabajar en gameplay, empieza por `generation`, `memory` y `portal`; si vas a trabajar en infraestructura, revisa `registry`, `config` y `common`.
+- Si necesitas entender el flujo general, sigue este orden: `BackroomsMod` → `registry` → `common/client` → `generation/memory/portal`.
+

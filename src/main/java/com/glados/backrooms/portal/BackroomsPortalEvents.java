@@ -1,6 +1,7 @@
 package com.glados.backrooms.portal;
 
 import com.glados.backrooms.dimension.ModDimensions;
+import com.glados.backrooms.generation.BackroomsChunkGenerator;
 import com.glados.backrooms.registry.ModBlocks;
 import com.glados.backrooms.registry.ModItems;
 import com.glados.backrooms.util.ModConstants;
@@ -15,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -68,23 +70,57 @@ public final class BackroomsPortalEvents {
             return false;
         }
 
-        Vec3 origin = frame.originCenter();
-        Vec3 destination = new Vec3(0.5D, 50.5D, 0.5D);
-        Portal portal = new Portal(IPRegistry.PORTAL.get(), originLevel);
-        portal.setOriginPos(origin);
-        portal.setDestinationDimension(ModDimensions.BACKROOMS_LEVEL_KEY);
-        portal.setDestination(destination);
-        portal.setOrientationAndSize(frame.axisW(), new Vec3(0.0D, 1.0D, 0.0D), frame.innerWidth(), frame.innerHeight());
-        portal.setRotationTransformation(frame.rotation());
-        portal.setTeleportable(true);
-        portal.portalTag = "backrooms_entry";
-        portal.setIsVisible(true);
-        PortalAPI.spawnServerEntity(portal);
+        PortalFrame backroomsFrame = new PortalFrame(
+                new BlockPos(frame.bottomLeft().getX(), BackroomsChunkGenerator.FLOOR_Y, frame.bottomLeft().getZ()),
+                frame.widthDirection(),
+                frame.outerWidth(),
+                frame.outerHeight());
+        buildPortalFrame(destinationLevel, backroomsFrame);
 
-        Portal reverse = PortalAPI.createReversePortal(portal);
-        reverse.portalTag = "backrooms_exit";
-        PortalAPI.spawnServerEntity(reverse);
+        Vec3 overworldOrigin = originCenter(frame, frame.bottomLeft().getY());
+        Vec3 backroomsOrigin = originCenter(backroomsFrame, BackroomsChunkGenerator.FLOOR_Y);
+
+        Portal backroomsPortal = new Portal(IPRegistry.PORTAL.get(), destinationLevel);
+        backroomsPortal.setOriginPos(backroomsOrigin);
+        backroomsPortal.setDestinationDimension(originLevel.dimension());
+        backroomsPortal.setDestination(overworldOrigin);
+        backroomsPortal.setOrientationAndSize(backroomsFrame.axisW(), new Vec3(0.0D, 1.0D, 0.0D), backroomsFrame.innerWidth(), backroomsFrame.innerHeight());
+        backroomsPortal.setRotationTransformation(backroomsFrame.rotation());
+        backroomsPortal.setTeleportable(true);
+        backroomsPortal.portalTag = "backrooms_entry";
+        backroomsPortal.setIsVisible(true);
+        PortalAPI.spawnServerEntity(backroomsPortal);
+
+        Portal overworldPortal = new Portal(IPRegistry.PORTAL.get(), originLevel);
+        overworldPortal.setOriginPos(overworldOrigin);
+        overworldPortal.setDestinationDimension(ModDimensions.BACKROOMS_LEVEL_KEY);
+        overworldPortal.setDestination(backroomsOrigin);
+        overworldPortal.setOrientationAndSize(frame.axisW(), new Vec3(0.0D, 1.0D, 0.0D), frame.innerWidth(), frame.innerHeight());
+        overworldPortal.setRotationTransformation(frame.rotation());
+        overworldPortal.setTeleportable(true);
+        overworldPortal.portalTag = "overworld_entry";
+        overworldPortal.setIsVisible(true);
+        PortalAPI.spawnServerEntity(overworldPortal);
         return true;
+    }
+
+    private static void buildPortalFrame(ServerLevel level, PortalFrame frame) {
+        BlockPos base = frame.bottomLeft();
+        for (int x = 0; x < frame.outerWidth(); x++) {
+            for (int y = 0; y < frame.outerHeight(); y++) {
+                BlockPos pos = base.relative(frame.widthDirection(), x).above(y);
+                boolean border = x == 0 || x == frame.outerWidth() - 1 || y == 0 || y == frame.outerHeight() - 1;
+                level.setBlock(pos, border ? ModBlocks.MIND_STORAGE.get().defaultBlockState() : Blocks.AIR.defaultBlockState(), 3);
+            }
+        }
+    }
+
+    private static Vec3 originCenter(PortalFrame frame, int baseY) {
+        BlockPos bottomLeft = new BlockPos(frame.bottomLeft().getX(), baseY, frame.bottomLeft().getZ());
+        Vec3 bottomCenter = Vec3.atCenterOf(bottomLeft.relative(frame.widthDirection(), 1).above(1));
+        double widthOffset = (frame.innerWidth() - 1.0D) / 2.0D;
+        double heightOffset = (frame.innerHeight() - 1.0D) / 2.0D;
+        return bottomCenter.add(Vec3.atLowerCornerOf(frame.widthDirection().getNormal()).scale(widthOffset)).add(0.0D, heightOffset, 0.0D);
     }
 
     private static PortalFrame findFrame(Level level, BlockPos clickedPos) {
@@ -136,23 +172,16 @@ public final class BackroomsPortalEvents {
 
     private record PortalFrame(BlockPos bottomLeft, Direction widthDirection, int outerWidth, int outerHeight) {
 
-        Vec3 originCenter() {
-            Vec3 bottomCenter = Vec3.atCenterOf(bottomLeft.relative(widthDirection, 1).above(1));
-            double widthOffset = (innerWidth() - 1.0D) / 2.0D;
-            double heightOffset = (innerHeight() - 1.0D) / 2.0D;
-            return bottomCenter.add(Vec3.atLowerCornerOf(widthDirection.getNormal()).scale(widthOffset)).add(0.0D, heightOffset, 0.0D);
-        }
-
         Vec3 axisW() {
             return Vec3.atLowerCornerOf(widthDirection.getNormal());
         }
 
         int innerWidth() {
-            return outerWidth - 2;
+            return outerWidth - -2;
         }
 
         int innerHeight() {
-            return outerHeight - 2;
+            return outerHeight - -2;
         }
 
         DQuaternion rotation() {

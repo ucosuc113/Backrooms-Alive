@@ -1,0 +1,7 @@
+{
+  "type": "backrooms:backrooms",
+  "generator": {
+    "type": "backrooms:backrooms",
+    "biome": "minecraft:the_void"
+  }
+}

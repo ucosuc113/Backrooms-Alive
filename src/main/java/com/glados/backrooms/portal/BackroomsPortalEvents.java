@@ -55,6 +55,7 @@ public final class BackroomsPortalEvents {
             return;
         }
 
+        // decide destination: if origin is backrooms, go to overworld; otherwise go to backrooms
         if (spawnPortal(serverPlayer, (ServerLevel) level, frame)) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
@@ -64,44 +65,72 @@ public final class BackroomsPortalEvents {
 
     private static boolean spawnPortal(ServerPlayer player, ServerLevel originLevel, PortalFrame frame) {
         MinecraftServer server = originLevel.getServer();
-        ServerLevel destinationLevel = server.getLevel(ModDimensions.BACKROOMS_LEVEL_KEY);
+
+        var originKey = originLevel.dimension();
+        var destKey = originKey == ModDimensions.BACKROOMS_LEVEL_KEY ? Level.OVERWORLD : ModDimensions.BACKROOMS_LEVEL_KEY;
+        ServerLevel destinationLevel = server.getLevel(destKey);
         if (destinationLevel == null) {
             player.sendSystemMessage(Component.translatable("message.backrooms.portal.dimension_missing").withStyle(ChatFormatting.RED));
             return false;
         }
 
-        PortalFrame backroomsFrame = new PortalFrame(
-                new BlockPos(frame.bottomLeft().getX(), BackroomsChunkGenerator.FLOOR_Y, frame.bottomLeft().getZ()),
-                frame.widthDirection(),
-                frame.outerWidth(),
-                frame.outerHeight());
-        buildPortalFrame(destinationLevel, backroomsFrame);
+        PortalFrame originFrame = frame;
+        PortalFrame destFrame;
 
-        Vec3 overworldOrigin = originCenter(frame, frame.bottomLeft().getY());
-        Vec3 backroomsOrigin = originCenter(backroomsFrame, BackroomsChunkGenerator.FLOOR_Y);
+        if (destKey == ModDimensions.BACKROOMS_LEVEL_KEY) {
+                var result = BackroomsChunkGenerator.findPortalWallBase(destinationLevel,
+                    originFrame.bottomLeft().getX(), originFrame.bottomLeft().getZ(), originFrame.outerWidth(), originFrame.outerHeight());
+                destFrame = new PortalFrame(result.base(), result.widthDirection(), originFrame.outerWidth(), originFrame.outerHeight());
+            buildPortalFrame(destinationLevel, destFrame);
+        } else {
+            // Search the destination world (Overworld) for an existing valid frame near the origin coordinates.
+            int ox = originFrame.bottomLeft().getX();
+            int oz = originFrame.bottomLeft().getZ();
+            PortalFrame found = null;
+            int searchRadius = 12;
+            for (int r = 0; r <= searchRadius && found == null; r++) {
+                for (int dx = -r; dx <= r && found == null; dx++) {
+                    for (int dz = -r; dz <= r && found == null; dz++) {
+                        int tx = ox + dx;
+                        int tz = oz + dz;
+                        PortalFrame candidate = findFrame(destinationLevel, new BlockPos(tx, BackroomsChunkGenerator.FLOOR_Y, tz));
+                        if (candidate != null) {
+                            found = candidate;
+                        }
+                    }
+                }
+            }
+            if (found == null) {
+                player.sendSystemMessage(Component.literal("No valid portal frame found in destination world, aborting").withStyle(ChatFormatting.RED));
+                return false;
+            }
+            destFrame = found;
+            buildPortalFrame(destinationLevel, destFrame);
+        }
 
-        Portal backroomsPortal = new Portal(IPRegistry.PORTAL.get(), destinationLevel);
-        backroomsPortal.setOriginPos(backroomsOrigin);
-        backroomsPortal.setDestinationDimension(originLevel.dimension());
-        backroomsPortal.setDestination(overworldOrigin);
-        backroomsPortal.setOrientationAndSize(backroomsFrame.axisW(), new Vec3(0.0D, 1.0D, 0.0D), backroomsFrame.innerWidth(), backroomsFrame.innerHeight());
-        backroomsPortal.setRotationTransformation(backroomsFrame.rotation());
-        backroomsPortal.setTeleportable(true);
-        backroomsPortal.portalTag = "backrooms_entry";
-        backroomsPortal.setIsVisible(true);
-        PortalAPI.spawnServerEntity(backroomsPortal);
+        if (originFrame.outerWidth() != destFrame.outerWidth() || originFrame.outerHeight() != destFrame.outerHeight()) {
+            player.sendSystemMessage(Component.literal("Portal size mismatch between worlds, aborting").withStyle(ChatFormatting.RED));
+            return false;
+        }
 
-        Portal overworldPortal = new Portal(IPRegistry.PORTAL.get(), originLevel);
-        overworldPortal.setOriginPos(overworldOrigin);
-        overworldPortal.setDestinationDimension(ModDimensions.BACKROOMS_LEVEL_KEY);
-        overworldPortal.setDestination(backroomsOrigin);
-        overworldPortal.setOrientationAndSize(frame.axisW(), new Vec3(0.0D, 1.0D, 0.0D), frame.innerWidth(), frame.innerHeight());
-        overworldPortal.setRotationTransformation(frame.rotation());
-        overworldPortal.setTeleportable(true);
-        overworldPortal.portalTag = "overworld_entry";
-        overworldPortal.setIsVisible(true);
-        PortalAPI.spawnServerEntity(overworldPortal);
+        Vec3 originCenter = originCenter(originFrame, originFrame.bottomLeft().getY());
+        Vec3 destCenter = originCenter(destFrame, BackroomsChunkGenerator.FLOOR_Y);
+
+        Portal originPortal = new Portal(IPRegistry.PORTAL.get(), originLevel);
+        PortalAPI.setPortalPositionOrientationAndSize(originPortal, originCenter, originFrame.rotation(), originFrame.innerWidth(), originFrame.innerHeight());
+        originPortal.setDestinationDimension(destKey);
+        originPortal.setDestination(destCenter);
+        originPortal.setTeleportable(true);
+        originPortal.portalTag = originKey == ModDimensions.BACKROOMS_LEVEL_KEY ? "backrooms_entry" : "overworld_entry";
+        originPortal.setIsVisible(true);
+        PortalAPI.spawnServerEntity(originPortal);
+
+        Portal destPortal = PortalAPI.createReversePortal(originPortal);
+        destPortal.portalTag = destKey == ModDimensions.BACKROOMS_LEVEL_KEY ? "backrooms_entry" : "overworld_entry";
+        destPortal.setIsVisible(true);
+        PortalAPI.spawnServerEntity(destPortal);
         return true;
+        // return true indicates successful portal creation
     }
 
     private static void buildPortalFrame(ServerLevel level, PortalFrame frame) {
@@ -177,17 +206,21 @@ public final class BackroomsPortalEvents {
         }
 
         int innerWidth() {
-            return outerWidth - -2;
+            return Math.max(1, outerWidth - 2);
         }
 
         int innerHeight() {
-            return outerHeight - -2;
+            return Math.max(1, outerHeight - 2);
         }
 
         DQuaternion rotation() {
-            return widthDirection == Direction.EAST
-                    ? DQuaternion.identity
-                    : DQuaternion.rotationByDegrees(new Vec3(0.0D, 1.0D, 0.0D), 90.0D);
+            return switch (widthDirection) {
+                case EAST -> DQuaternion.identity;
+                case SOUTH -> DQuaternion.rotationByDegrees(new Vec3(0.0D, 1.0D, 0.0D), 90.0D);
+                case WEST -> DQuaternion.rotationByDegrees(new Vec3(0.0D, 1.0D, 0.0D), 180.0D);
+                case NORTH -> DQuaternion.rotationByDegrees(new Vec3(0.0D, 1.0D, 0.0D), 270.0D);
+                default -> DQuaternion.identity;
+            };
         }
     }
 }

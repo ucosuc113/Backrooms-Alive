@@ -4,6 +4,7 @@ import com.glados.backrooms.analysis.MemoryAnalysisRepository;
 import com.glados.backrooms.analysis.StyleFingerprint;
 import com.glados.backrooms.district.District;
 import com.glados.backrooms.graph.ConnectionSelector.ClassifiedEdge;
+import com.glados.backrooms.util.HashUtil;
 import com.glados.backrooms.graph.CorridorRouter.RoutedCorridor;
 import com.glados.backrooms.graph.FunctionalRoleAssigner.RoomAssignment;
 import com.glados.backrooms.graph.OpeningPlacer.PlacedOpenings;
@@ -74,6 +75,10 @@ final class RoomGraphGenerator {
         List<ClassifiedEdge> classified = ConnectionSelector.select(
                 mstEdges, delaunayEdges, rooms, zoneSeed);
 
+        // ── Inserta habitaciones de relleno en huecos sin cobertura.
+        List<MutableRoom> fillerRooms = generateFillerRooms(zoneBounds, rooms, fingerprint, zoneSeed);
+        rooms.addAll(fillerRooms);
+
         // ── Paso 6: routing de pasillos ───────────────────────────────────────────
         List<RoutedCorridor> routed = CorridorRouter.route(classified, rooms, zoneSeed);
 
@@ -140,6 +145,40 @@ final class RoomGraphGenerator {
             return opt.get().styleFingerprint();
         }
         return repo.allUsable().get(0).styleFingerprint();
+    }
+
+    private static List<MutableRoom> generateFillerRooms(GeometryUtil.IntRect bounds,
+            List<MutableRoom> existing, StyleFingerprint fingerprint, long seed) {
+        List<MutableRoom> fillers = new ArrayList<>();
+        int gridStep = 16;
+        int nextId = existing.stream().mapToInt(r -> r.id).max().orElse(-1) + 1;
+        long h = HashUtil.hash(seed, 0xF111L);
+
+        for (int gx = bounds.minX() + 8; gx < bounds.maxX() - 8; gx += gridStep) {
+            for (int gz = bounds.minZ() + 8; gz < bounds.maxZ() - 8; gz += gridStep) {
+                boolean occupied = false;
+                for (MutableRoom r : existing) {
+                    if (gx >= r.minX - 4 && gx <= r.maxX + 4 && gz >= r.minZ - 4 && gz <= r.maxZ + 4) {
+                        occupied = true;
+                        break;
+                    }
+                }
+                if (occupied) continue;
+
+                h = HashUtil.hash(h, gx, gz);
+                int sizeW = fingerprint.typicalRoomWidth() + (int) (HashUtil.floatFromHash(h) * 4);
+                h = HashUtil.hash(h, gx, gz, 1);
+                int sizeD = fingerprint.typicalRoomDepth() + (int) (HashUtil.floatFromHash(h) * 4);
+                sizeW = (sizeW % 2 == 0) ? sizeW : sizeW + 1;
+                sizeD = (sizeD % 2 == 0) ? sizeD : sizeD + 1;
+
+                sizeW = Math.max(6, Math.min(20, sizeW));
+                sizeD = Math.max(6, Math.min(20, sizeD));
+
+                fillers.add(new MutableRoom(nextId++, gx - sizeW / 2, gz - sizeD / 2, gx + sizeW / 2, gz + sizeD / 2));
+            }
+        }
+        return fillers;
     }
 
     private static RoomGraph emptyGraph(ZoneId zoneId, long seed, GeometryUtil.IntRect bounds) {

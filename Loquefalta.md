@@ -376,7 +376,7 @@ Para cada columna (localX, localZ) con roleMap == PARED_HABITACION:
 
 #### Efecto 2 — Extension erronea
 Para cada segmento de pared en cada RoomNode activo:
-  Para cada extremo del segmento que cae dentro del chunk:
+  Para cada extremo del segmento que cae dentro del chunk
     float deg = context.degradationAdditive[lx_extremo][lz_extremo]
     Si deg < 0.5f -> skip
     long h = HashUtil.hash(worldSeed, wx_extremo, wz_extremo, "wallExt")

@@ -1,0 +1,182 @@
+Compiled from "PortalAPI.java"
+public class qouteall.imm_ptl.core.api.PortalAPI {
+  public qouteall.imm_ptl.core.api.PortalAPI();
+    Code:
+       0: aload_0
+       1: invokespecial #14                 // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setPortalPositionOrientationAndSize(qouteall.imm_ptl.core.portal.Portal, net.minecraft.world.phys.Vec3, qouteall.q_misc_util.my_util.DQuaternion, double, double);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #24                 // Method qouteall/imm_ptl/core/portal/Portal.setOriginPos:(Lnet/minecraft/world/phys/Vec3;)V
+       5: aload_0
+       6: aload_2
+       7: invokestatic  #30                 // Method qouteall/imm_ptl/core/McHelper.getAxisWFromOrientation:(Lqouteall/q_misc_util/my_util/DQuaternion;)Lnet/minecraft/world/phys/Vec3;
+      10: aload_2
+      11: invokestatic  #33                 // Method qouteall/imm_ptl/core/McHelper.getAxisHFromOrientation:(Lqouteall/q_misc_util/my_util/DQuaternion;)Lnet/minecraft/world/phys/Vec3;
+      14: dload_3
+      15: dload         5
+      17: invokevirtual #37                 // Method qouteall/imm_ptl/core/portal/Portal.setOrientationAndSize:(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;DD)V
+      20: return
+
+  public static void setPortalOrthodoxShape(qouteall.imm_ptl.core.portal.Portal, net.minecraft.core.Direction, net.minecraft.world.phys.AABB);
+    Code:
+       0: aload_1
+       1: invokestatic  #54                 // Method qouteall/q_misc_util/Helper.getPerpendicularDirections:(Lnet/minecraft/core/Direction;)Lnet/minecraft/util/Tuple;
+       4: astore_3
+       5: aload_2
+       6: invokestatic  #58                 // Method qouteall/q_misc_util/Helper.getBoxSize:(Lnet/minecraft/world/phys/AABB;)Lnet/minecraft/world/phys/Vec3;
+       9: astore        4
+      11: aload_2
+      12: aload_1
+      13: invokestatic  #62                 // Method qouteall/q_misc_util/Helper.getBoxSurface:(Lnet/minecraft/world/phys/AABB;Lnet/minecraft/core/Direction;)Lnet/minecraft/world/phys/AABB;
+      16: astore        5
+      18: aload         5
+      20: invokevirtual #68                 // Method net/minecraft/world/phys/AABB.m_82399_:()Lnet/minecraft/world/phys/Vec3;
+      23: astore        6
+      25: aload_0
+      26: aload         6
+      28: getfield      #73                 // Field net/minecraft/world/phys/Vec3.f_82479_:D
+      31: aload         6
+      33: getfield      #76                 // Field net/minecraft/world/phys/Vec3.f_82480_:D
+      36: aload         6
+      38: getfield      #79                 // Field net/minecraft/world/phys/Vec3.f_82481_:D
+      41: invokevirtual #83                 // Method qouteall/imm_ptl/core/portal/Portal.m_6034_:(DDD)V
+      44: aload_0
+      45: aload_3
+      46: invokevirtual #89                 // Method net/minecraft/util/Tuple.m_14418_:()Ljava/lang/Object;
+      49: checkcast     #9                  // class net/minecraft/core/Direction
+      52: invokevirtual #93                 // Method net/minecraft/core/Direction.m_122436_:()Lnet/minecraft/core/Vec3i;
+      55: invokestatic  #97                 // Method net/minecraft/world/phys/Vec3.m_82528_:(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;
+      58: putfield      #100                // Field qouteall/imm_ptl/core/portal/Portal.axisW:Lnet/minecraft/world/phys/Vec3;
+      61: aload_0
+      62: aload_3
+      63: invokevirtual #103                // Method net/minecraft/util/Tuple.m_14419_:()Ljava/lang/Object;
+      66: checkcast     #9                  // class net/minecraft/core/Direction
+      69: invokevirtual #93                 // Method net/minecraft/core/Direction.m_122436_:()Lnet/minecraft/core/Vec3i;
+      72: invokestatic  #97                 // Method net/minecraft/world/phys/Vec3.m_82528_:(Lnet/minecraft/core/Vec3i;)Lnet/minecraft/world/phys/Vec3;
+      75: putfield      #106                // Field qouteall/imm_ptl/core/portal/Portal.axisH:Lnet/minecraft/world/phys/Vec3;
+      78: aload_0
+      79: aload         4
+      81: aload_3
+      82: invokevirtual #89                 // Method net/minecraft/util/Tuple.m_14418_:()Ljava/lang/Object;
+      85: checkcast     #9                  // class net/minecraft/core/Direction
+      88: invokevirtual #110                // Method net/minecraft/core/Direction.m_122434_:()Lnet/minecraft/core/Direction$Axis;
+      91: invokestatic  #114                // Method qouteall/q_misc_util/Helper.getCoordinate:(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)D
+      94: putfield      #116                // Field qouteall/imm_ptl/core/portal/Portal.width:D
+      97: aload_0
+      98: aload         4
+     100: aload_3
+     101: invokevirtual #103                // Method net/minecraft/util/Tuple.m_14419_:()Ljava/lang/Object;
+     104: checkcast     #9                  // class net/minecraft/core/Direction
+     107: invokevirtual #110                // Method net/minecraft/core/Direction.m_122434_:()Lnet/minecraft/core/Direction$Axis;
+     110: invokestatic  #114                // Method qouteall/q_misc_util/Helper.getCoordinate:(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/core/Direction$Axis;)D
+     113: putfield      #118                // Field qouteall/imm_ptl/core/portal/Portal.height:D
+     116: return
+
+  public static void setPortalTransformation(qouteall.imm_ptl.core.portal.Portal, net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>, net.minecraft.world.phys.Vec3, qouteall.q_misc_util.my_util.DQuaternion, double);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #136                // Method qouteall/imm_ptl/core/portal/Portal.setDestinationDimension:(Lnet/minecraft/resources/ResourceKey;)V
+       5: aload_0
+       6: aload_2
+       7: invokevirtual #139                // Method qouteall/imm_ptl/core/portal/Portal.setDestination:(Lnet/minecraft/world/phys/Vec3;)V
+      10: aload_0
+      11: aload_3
+      12: invokevirtual #143                // Method qouteall/imm_ptl/core/portal/Portal.setRotation:(Lqouteall/q_misc_util/my_util/DQuaternion;)V
+      15: aload_0
+      16: dload         4
+      18: invokevirtual #147                // Method qouteall/imm_ptl/core/portal/Portal.setScaleTransformation:(D)V
+      21: return
+
+  public static qouteall.q_misc_util.my_util.DQuaternion getPortalOrientationQuaternion(qouteall.imm_ptl.core.portal.Portal);
+    Code:
+       0: aload_0
+       1: getfield      #100                // Field qouteall/imm_ptl/core/portal/Portal.axisW:Lnet/minecraft/world/phys/Vec3;
+       4: aload_0
+       5: getfield      #106                // Field qouteall/imm_ptl/core/portal/Portal.axisH:Lnet/minecraft/world/phys/Vec3;
+       8: invokestatic  #160                // Method qouteall/imm_ptl/core/portal/PortalManipulation.getPortalOrientationQuaternion:(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;)Lqouteall/q_misc_util/my_util/DQuaternion;
+      11: areturn
+
+  public static void setPortalOrientationQuaternion(qouteall.imm_ptl.core.portal.Portal, qouteall.q_misc_util.my_util.DQuaternion);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #164                // Method qouteall/imm_ptl/core/portal/PortalManipulation.setPortalOrientationQuaternion:(Lqouteall/imm_ptl/core/portal/Portal;Lqouteall/q_misc_util/my_util/DQuaternion;)V
+       5: return
+
+  public static void spawnServerEntity(net.minecraft.world.entity.Entity);
+    Code:
+       0: aload_0
+       1: invokestatic  #169                // Method qouteall/imm_ptl/core/McHelper.spawnServerEntity:(Lnet/minecraft/world/entity/Entity;)V
+       4: return
+
+  public static <T extends qouteall.imm_ptl.core.portal.Portal> T createReversePortal(T);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #178                // Method qouteall/imm_ptl/core/portal/Portal.m_6095_:()Lnet/minecraft/world/entity/EntityType;
+       5: invokestatic  #181                // Method qouteall/imm_ptl/core/portal/PortalManipulation.createReversePortal:(Lqouteall/imm_ptl/core/portal/Portal;Lnet/minecraft/world/entity/EntityType;)Lqouteall/imm_ptl/core/portal/Portal;
+       8: areturn
+
+  public static <T extends qouteall.imm_ptl.core.portal.Portal> T createFlippedPortal(T);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #178                // Method qouteall/imm_ptl/core/portal/Portal.m_6095_:()Lnet/minecraft/world/entity/EntityType;
+       5: invokestatic  #185                // Method qouteall/imm_ptl/core/portal/PortalManipulation.createFlippedPortal:(Lqouteall/imm_ptl/core/portal/Portal;Lnet/minecraft/world/entity/EntityType;)Lqouteall/imm_ptl/core/portal/Portal;
+       8: areturn
+
+  public static <T extends qouteall.imm_ptl.core.portal.Portal> T copyPortal(qouteall.imm_ptl.core.portal.Portal, net.minecraft.world.entity.EntityType<T>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #189                // Method qouteall/imm_ptl/core/portal/PortalManipulation.copyPortal:(Lqouteall/imm_ptl/core/portal/Portal;Lnet/minecraft/world/entity/EntityType;)Lqouteall/imm_ptl/core/portal/Portal;
+       5: areturn
+
+  public static void addGlobalPortal(net.minecraft.server.level.ServerLevel, qouteall.imm_ptl.core.portal.Portal);
+    Code:
+       0: invokestatic  #197                // Method qouteall/imm_ptl/core/McHelper.validateOnServerThread:()V
+       3: aload_0
+       4: invokestatic  #203                // Method qouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage.get:(Lnet/minecraft/server/level/ServerLevel;)Lqouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage;
+       7: aload_1
+       8: invokevirtual #207                // Method qouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage.addPortal:(Lqouteall/imm_ptl/core/portal/Portal;)V
+      11: return
+
+  public static void removeGlobalPortal(net.minecraft.server.level.ServerLevel, qouteall.imm_ptl.core.portal.Portal);
+    Code:
+       0: invokestatic  #197                // Method qouteall/imm_ptl/core/McHelper.validateOnServerThread:()V
+       3: aload_0
+       4: invokestatic  #203                // Method qouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage.get:(Lnet/minecraft/server/level/ServerLevel;)Lqouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage;
+       7: aload_1
+       8: invokevirtual #213                // Method qouteall/imm_ptl/core/portal/global_portals/GlobalPortalStorage.removePortal:(Lqouteall/imm_ptl/core/portal/Portal;)V
+      11: return
+
+  public static void addChunkLoaderForPlayer(net.minecraft.server.level.ServerPlayer, qouteall.imm_ptl.core.chunk_loading.ChunkLoader);
+    Code:
+       0: invokestatic  #197                // Method qouteall/imm_ptl/core/McHelper.validateOnServerThread:()V
+       3: aload_0
+       4: aload_1
+       5: invokestatic  #220                // Method qouteall/imm_ptl/core/chunk_loading/NewChunkTrackingGraph.addPerPlayerAdditionalChunkLoader:(Lnet/minecraft/server/level/ServerPlayer;Lqouteall/imm_ptl/core/chunk_loading/ChunkLoader;)V
+       8: return
+
+  public static void removeChunkLoaderForPlayer(net.minecraft.server.level.ServerPlayer, qouteall.imm_ptl.core.chunk_loading.ChunkLoader);
+    Code:
+       0: invokestatic  #197                // Method qouteall/imm_ptl/core/McHelper.validateOnServerThread:()V
+       3: aload_0
+       4: aload_1
+       5: invokestatic  #228                // Method qouteall/imm_ptl/core/chunk_loading/NewChunkTrackingGraph.removePerPlayerAdditionalChunkLoader:(Lnet/minecraft/server/level/ServerPlayer;Lqouteall/imm_ptl/core/chunk_loading/ChunkLoader;)V
+       8: return
+
+  public static void teleportEntity(net.minecraft.world.entity.Entity, net.minecraft.server.level.ServerLevel, net.minecraft.world.phys.Vec3);
+    Code:
+       0: aload_0
+       1: aload_2
+       2: aload_1
+       3: invokestatic  #236                // Method qouteall/imm_ptl/core/teleportation/ServerTeleportationManager.teleportEntityGeneral:(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/server/level/ServerLevel;)V
+       6: return
+}
+

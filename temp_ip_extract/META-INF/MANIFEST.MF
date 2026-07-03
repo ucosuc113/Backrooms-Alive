@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Specification-Title: Immersive Portals
+Specification-Vendor: qouteall
+Specification-Version: 1
+Implementation-Title: SeeThroughPortals
+Implementation-Version: 3.0.7
+Implementation-Vendor: qouteall, Nick1st
+Implementation-Timestamp: 2025-03-30T23:12:49+0200
+MixinConfigs: imm_ptl.mixins.json,imm_ptl_fabric.mixins.json,imm_ptl_com
+ pat.mixins.json,imm_ptl_peripheral.mixins.json,q_misc_util.mixins.json
+

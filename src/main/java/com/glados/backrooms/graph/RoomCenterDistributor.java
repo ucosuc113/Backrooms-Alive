@@ -17,7 +17,7 @@ import java.util.List;
 final class RoomCenterDistributor {
 
     /** Distancia minima entre centros de habitacion, en bloques. */
-    private static final int MIN_DISTANCE = 20;
+    private static final int MIN_DISTANCE = 12;
 
     /** Intentos maximos antes de aceptar los centros ya colocados. */
     private static final int MAX_ATTEMPTS_PER_ROOM = 30;
@@ -43,9 +43,9 @@ final class RoomCenterDistributor {
         // de hasta +-1 habitacion via hash, para que zonas con identica densidadBase
         // puedan diferir entre si.
         long hN = HashUtil.hash(zoneSeed, 0x1A);
-        int nBase = (int) Math.round(5 + (densidadBase - 0.3f) / 0.6f * 10);
+        int nBase = (int) Math.round(8 + (densidadBase - 0.3f) / 0.6f * 12);
         int nVariation = HashUtil.intInRange(hN, -1, 1);
-        int n = Math.max(5, Math.min(15, nBase + nVariation));
+        int n = Math.max(8, Math.min(20, nBase + nVariation));
 
         int xMin = zoneBounds.minX() + EDGE_MARGIN;
         int xMax = zoneBounds.maxX() - EDGE_MARGIN;

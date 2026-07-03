@@ -19,7 +19,7 @@ import java.util.Set;
 final class ConnectionSelector {
 
     /** Fraccion de aristas no-MST que se anade como secundarias. */
-    private static final float SECONDARY_FRACTION = 0.35f;
+    private static final float SECONDARY_FRACTION = 0.50f;
 
     // Anchos segun seccion 6.6.
     private static final int[] PRINCIPAL_WIDTHS  = {3, 4};

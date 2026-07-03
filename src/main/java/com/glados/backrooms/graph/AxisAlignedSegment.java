@@ -47,9 +47,9 @@ public record AxisAlignedSegment(
      *               interiores, sin contar las paredes).
      */
     public static AxisAlignedSegment alongX(int fixedZ, int startX, int endX, int width) {
-        int half = width / 2;
-        int wA = fixedZ - half;
-        int wB = fixedZ + half;
+        int halfInterior = width / 2;
+        int wA = fixedZ - halfInterior - 1;
+        int wB = fixedZ + halfInterior + 1;
         return new AxisAlignedSegment(
                 Axis.X, fixedZ, startX, endX,
                 wA, wB,
@@ -65,9 +65,9 @@ public record AxisAlignedSegment(
      * @param width  anchura del pasillo en bloques.
      */
     public static AxisAlignedSegment alongZ(int fixedX, int startZ, int endZ, int width) {
-        int half = width / 2;
-        int wA = fixedX - half;
-        int wB = fixedX + half;
+        int halfInterior = width / 2;
+        int wA = fixedX - halfInterior - 1;
+        int wB = fixedX + halfInterior + 1;
         return new AxisAlignedSegment(
                 Axis.Z, fixedX, startZ, endZ,
                 wA, wB,

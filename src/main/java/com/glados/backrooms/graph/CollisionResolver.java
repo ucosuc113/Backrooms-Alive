@@ -19,7 +19,7 @@ import java.util.List;
 final class CollisionResolver {
 
     /** Margen adicional entre habitaciones (bloques libres entre bounds). */
-    private static final int MARGIN  = 4;
+    private static final int MARGIN  = 2;
     /** Iteraciones maximas de repulsion. */
     private static final int MAX_ITER = 50;
     /** Fuerza de empuje por iteracion, en bloques. */

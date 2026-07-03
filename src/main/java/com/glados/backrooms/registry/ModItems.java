@@ -38,4 +38,24 @@ public final class ModItems {
             "mind_storage",
             () -> new BlockItem(ModBlocks.MIND_STORAGE.get(), new Item.Properties())
     );
+
+    public static final RegistryObject<Item> BACK_WALL_ITEM = ITEMS.register(
+            "back_wall",
+            () -> new BlockItem(ModBlocks.BACK_WALL.get(), new Item.Properties())
+    );
+
+    public static final RegistryObject<Item> BACK_FLOOR_ITEM = ITEMS.register(
+            "back_floor",
+            () -> new BlockItem(ModBlocks.BACK_FLOOR.get(), new Item.Properties())
+    );
+
+    public static final RegistryObject<Item> BACK_CEILING_ITEM = ITEMS.register(
+            "back_ceiling",
+            () -> new BlockItem(ModBlocks.BACK_CEILING.get(), new Item.Properties())
+    );
+
+    public static final RegistryObject<Item> BACK_LIGHT_ITEM = ITEMS.register(
+            "back_light",
+            () -> new BlockItem(ModBlocks.BACK_LIGHT.get(), new Item.Properties())
+    );
 }

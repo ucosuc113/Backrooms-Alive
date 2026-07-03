@@ -3,7 +3,7 @@ package com.glados.backrooms.analysis;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.world.level.block.Blocks;
+import com.glados.backrooms.registry.ModBlocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -35,8 +35,6 @@ public final class NeutralAnalysisProvider {
     /** Longitud de referencia del WallPrototype neutral (Documento de Diseno, 4.7: minimo 4). */
     private static final int NEUTRAL_WALL_LENGTH = 4;
 
-    private static final MemoryAnalysis INSTANCE = buildNeutral();
-
     private NeutralAnalysisProvider() {
     }
 
@@ -45,13 +43,17 @@ public final class NeutralAnalysisProvider {
      * misma instancia, nunca null.
      */
     public static MemoryAnalysis get() {
-        return INSTANCE;
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        private static final MemoryAnalysis INSTANCE = buildNeutral();
     }
 
     // ── Construccion ────────────────────────────────────────────────────────────
 
     private static MemoryAnalysis buildNeutral() {
-        BlockState sandstone = Blocks.SMOOTH_SANDSTONE.defaultBlockState();
+        BlockState sandstone = ModBlocks.BACK_WALL.get().defaultBlockState();
 
         // ── WallPrototype EXTERIOR: 4 columnas identicas de smooth_sandstone ───
         WallColumn neutralColumn = buildSolidColumn(sandstone);

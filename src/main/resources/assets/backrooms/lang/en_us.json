@@ -2,6 +2,8 @@
   "itemGroup.backrooms.backrooms_tab": "Backrooms",
   "creativetab.backrooms.backrooms_tab": "Backrooms",
   "block.backrooms.mind_storage": "Mind Storage",
+  "block.backrooms.ghost_oak_planks": "Ghost Oak Planks",
+  "block.backrooms.back_wall_ghost": "Back Wall Ghost",
   "item.backrooms.episodic_comparator": "Episodic Comparator",
   "item.backrooms.memory_selector": "Memory Selector",
   "message.backrooms.memory_selector.first": "Memory corner A: %s",

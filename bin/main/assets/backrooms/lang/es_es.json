@@ -2,6 +2,8 @@
   "itemGroup.backrooms.backrooms_tab": "Backrooms",
   "creativetab.backrooms.backrooms_tab": "Backrooms",
   "block.backrooms.mind_storage": "Almac\u00e9n de Mentes",
+  "block.backrooms.ghost_oak_planks": "Tablones de Roble Fantasma",
+  "block.backrooms.back_wall_ghost": "Pared Trasera Fantasma",
   "item.backrooms.episodic_comparator": "Comparador Epis\u00f3dico",
   "item.backrooms.memory_selector": "Selector de Recuerdos",
   "message.backrooms.memory_selector.first": "Esquina A del recuerdo: %s",

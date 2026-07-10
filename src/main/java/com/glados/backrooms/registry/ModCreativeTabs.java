@@ -31,6 +31,8 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.MIND_STORAGE_ITEM.get());
                         output.accept(ModItems.EPISODIC_COMPARATOR.get());
                         output.accept(ModItems.MEMORY_SELECTOR.get());
+                        output.accept(ModItems.GHOST_OAK_PLANKS_ITEM.get());
+                        output.accept(ModItems.BACK_WALL_GHOST_ITEM.get());
                     })
                     .build()
     );

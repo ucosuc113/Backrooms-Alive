@@ -44,6 +44,16 @@ public final class ModItems {
             () -> new BlockItem(ModBlocks.BACK_WALL.get(), new Item.Properties())
     );
 
+    public static final RegistryObject<Item> GHOST_OAK_PLANKS_ITEM = ITEMS.register(
+            "ghost_oak_planks",
+            () -> new BlockItem(ModBlocks.GHOST_OAK_PLANKS.get(), new Item.Properties())
+    );
+
+    public static final RegistryObject<Item> BACK_WALL_GHOST_ITEM = ITEMS.register(
+            "back_wall_ghost",
+            () -> new BlockItem(ModBlocks.BACK_WALL_GHOST.get(), new Item.Properties())
+    );
+
     public static final RegistryObject<Item> BACK_FLOOR_ITEM = ITEMS.register(
             "back_floor",
             () -> new BlockItem(ModBlocks.BACK_FLOOR.get(), new Item.Properties())
